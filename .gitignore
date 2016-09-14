@@ -16,3 +16,5 @@ bin
 RUNNING_PID
 .cache-main
 .cache-tests
+.sbtserver
+.sbtserver/connections
