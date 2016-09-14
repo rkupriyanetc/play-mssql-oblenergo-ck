@@ -1,0 +1,47 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET     /                           	mk.obl.ck.energy.csm.controllers.Application.index
+GET     /restricted                 	mk.obl.ck.energy.csm.controllers.Application.restricted
+GET     /assets/javascript/routes.js    mk.obl.ck.energy.csm.controllers.Application.jsRoutes
+
+GET     /profile                    	mk.obl.ck.energy.csm.controllers.Application.profile
+
+GET     /login                      	mk.obl.ck.energy.csm.controllers.Application.login
+POST    /login                      	mk.obl.ck.energy.csm.controllers.Application.doLogin
+
+GET     /logout                     	com.feth.play.module.pa.controllers.Authenticate.logout
+GET     /authenticate/:provider     	com.feth.play.module.pa.controllers.Authenticate.authenticate(provider: String)
+
+GET     /signup                     	mk.obl.ck.energy.csm.controllers.Application.signup
+POST    /signup                     	mk.obl.ck.energy.csm.controllers.Application.doSignup
+
+GET     /accounts/unverified        	mk.obl.ck.energy.csm.controllers.Signup.unverified
+GET     /authenticate/:provider/denied  mk.obl.ck.energy.csm.controllers.Signup.oAuthDenied(provider: String)
+
+GET     /accounts/verify/:token     	mk.obl.ck.energy.csm.controllers.Signup.verify(token: String)
+GET     /accounts/exists            	mk.obl.ck.energy.csm.controllers.Signup.exists
+
+GET     /accounts/password/reset/:token mk.obl.ck.energy.csm.controllers.Signup.resetPassword(token: String)
+POST    /accounts/password/reset        mk.obl.ck.energy.csm.controllers.Signup.doResetPassword
+
+GET    /accounts/password/change    	mk.obl.ck.energy.csm.controllers.Account.changePassword
+POST   /accounts/password/change    	mk.obl.ck.energy.csm.controllers.Account.doChangePassword
+
+GET     /accounts/verify            	mk.obl.ck.energy.csm.controllers.Account.verifyEmail
+
+GET     /accounts/add               	mk.obl.ck.energy.csm.controllers.Account.link
+
+GET     /accounts/link              	mk.obl.ck.energy.csm.controllers.Account.askLink
+POST    /accounts/link              	mk.obl.ck.energy.csm.controllers.Account.doLink
+
+GET     /accounts/merge             	mk.obl.ck.energy.csm.controllers.Account.askMerge
+POST    /accounts/merge             	mk.obl.ck.energy.csm.controllers.Account.doMerge
+
+GET     /login/password/forgot     	mk.obl.ck.energy.csm.controllers.Signup.forgotPassword(email: String ?= "")
+POST    /login/password/forgot     	mk.obl.ck.energy.csm.controllers.Signup.doForgotPassword
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               	controllers.Assets.versioned(path="/public", file: Asset)
