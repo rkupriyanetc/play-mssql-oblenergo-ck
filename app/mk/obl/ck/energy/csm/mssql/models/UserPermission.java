@@ -12,19 +12,11 @@ import be.objectify.deadbolt.java.models.Permission;
 
 @Entity
 @Table( name = "permissions" )
-@NamedQuery( name = "FindByPermissionValue", query = "SELECT r FROM UserRole r where r.roleName = :rolename" )
+@NamedQuery( name = "FindByPermissionValue", query = "SELECT p FROM UserPermission p where p.value = :value" )
 public class UserPermission extends MSSQLModel implements Permission {
 	
-	private static final String	FIELD_PERMISSION_VALUE	= "value";
+	private static final String FIELD_PERMISSION_VALUE = "value";
 	
-	@Column( length = 50 )
-	public String								value;
-
-	@Override
-	public String getValue() {
-		return value;
-	}
-
 	public static UserPermission findByValue( final String value ) {
 		try {
 			final Query query = getEntityManager().createNamedQuery( "FindByPermissionValue" );
@@ -48,12 +40,20 @@ public class UserPermission extends MSSQLModel implements Permission {
 			return null;
 		}
 	}
-
+	
+	@Column( length = 50 )
+	private String value;
+	
 	@Override
 	protected String classInfo() {
 		final StringBuffer sb = new StringBuffer( "\n" );
-		sb.append( "Permission value : " );
+		sb.append( "UserPermission : " );
 		sb.append( value );
 		return sb.toString();
+	}
+	
+	@Override
+	public String getValue() {
+		return value;
 	}
 }

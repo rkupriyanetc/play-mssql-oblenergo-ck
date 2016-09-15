@@ -14,24 +14,17 @@ import be.objectify.deadbolt.java.models.Role;
 @Table( name = "roles" )
 @NamedQuery( name = "FindByUserRolename", query = "SELECT r FROM UserRole r where r.roleName = :rolename" )
 public class UserRole extends MSSQLModel implements Role {
-
+	
+	public static final String	OPER_ROLE_NAME	= "OPER";
+	
+	public static final String	ADMIN_ROLE_NAME	= "ADMIN";
+	
+	public static final Role		OPER						= new UserRole( OPER_ROLE_NAME );
+	
+	public static final Role		ADMIN						= new UserRole( ADMIN_ROLE_NAME );
+	
 	private static final String	FIELD_ROLENAME	= "rolename";
-
-	@Column( name = "role_name", length = 5 )
-	private final String				roleName;
-
-	private UserRole( final String roleName ) {
-		this.roleName = roleName;
-	}
-
-	@Override
-	protected String classInfo() {
-		final StringBuffer sb = new StringBuffer( "\n" );
-		sb.append( "RoleName : " );
-		sb.append( roleName );
-		return sb.toString();
-	}
-
+	
 	public static UserRole findByRoleName( final String roleName ) {
 		try {
 			final Query query = getEntityManager().createNamedQuery( "FindByUserRolename" );
@@ -55,7 +48,31 @@ public class UserRole extends MSSQLModel implements Role {
 			return null;
 		}
 	}
-
+	
+	@Column( name = "role_name", length = 5 )
+	private final String roleName;
+	
+	private UserRole( final String roleName ) {
+		this.roleName = roleName;
+	}
+	
+	@Override
+	protected String classInfo() {
+		final StringBuffer sb = new StringBuffer( "\n" );
+		sb.append( "RoleName : " );
+		sb.append( roleName );
+		return sb.toString();
+	}
+	
+	@Override
+	public boolean equals( final Object o ) {
+		if ( o == null )
+			return false;
+		if ( o instanceof UserRole )
+			return ( ( UserRole )o ).getName().equals( this.getName() );
+		return false;
+	}
+	
 	@Override
 	public String getName() {
 		return roleName;
