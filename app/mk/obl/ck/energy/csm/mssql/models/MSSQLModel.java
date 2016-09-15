@@ -18,23 +18,29 @@ import mk.obl.ck.energy.csm.mssql.models.api.MSSQLIdentifier;
 @MappedSuperclass
 public abstract class MSSQLModel implements MSSQLIdentifier {
 	
-	protected static final Logger	LOGGER		= LoggerFactory.getLogger( MSSQLModel.class );
+	protected static final Logger	LOGGER										= LoggerFactory.getLogger( MSSQLModel.class );
 	
-	protected static final String	FIELD_ID	= "id";
+	public static final String		DEFAULT_PERSISTENCE_UNIT	= "defaultPersistenceUnit";
 	
-	@PersistenceContext( unitName = "defaultPersistenceUnit" )
-	private EntityManager					em;
+	public static final String		DEFAULT_DATASOURCE				= "DefaultDS";
+	
+	protected static final String	FIELD_ID									= "id";
+	
+	@PersistenceContext( unitName = DEFAULT_PERSISTENCE_UNIT )
+	private static EntityManager	em;
 	
 	@Id
 	protected long								id;
 	
 	protected abstract String classInfo();
 	
-	protected EntityManager getEntityManager() {
+	public static EntityManager getEntityManager() {
 		if ( em == null ) {
-			final EntityManagerFactory emf = Persistence.createEntityManagerFactory( "defaultPersistenceUnit" );
+			final EntityManagerFactory emf = Persistence.createEntityManagerFactory( DEFAULT_PERSISTENCE_UNIT );
 			em = emf.createEntityManager();
 		}
+		LOGGER.warn( "EntityManager is {}", em );
+		LOGGER.info( "EntityManager is {}", em );
 		return em;
 	}
 	

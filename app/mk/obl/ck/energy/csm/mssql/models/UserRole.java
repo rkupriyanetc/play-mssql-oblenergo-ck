@@ -12,18 +12,18 @@ import be.objectify.deadbolt.java.models.Role;
 
 @Entity
 @Table( name = "roles" )
-@NamedQuery( name = "UserRole.findByRolename", query = "SELECT r FROM UserRole r where r.roleName = :rolename" )
+@NamedQuery( name = "FindByUserRolename", query = "SELECT r FROM UserRole r where r.roleName = :rolename" )
 public class UserRole extends MSSQLModel implements Role {
-	
+
 	private static final String	FIELD_ROLENAME	= "rolename";
-	
+
 	@Column( name = "role_name", length = 5 )
 	private final String				roleName;
-	
+
 	private UserRole( final String roleName ) {
 		this.roleName = roleName;
 	}
-	
+
 	@Override
 	protected String classInfo() {
 		final StringBuffer sb = new StringBuffer( "\n" );
@@ -31,10 +31,10 @@ public class UserRole extends MSSQLModel implements Role {
 		sb.append( roleName );
 		return sb.toString();
 	}
-	
-	public UserRole findByRoleName( final String roleName ) {
+
+	public static UserRole findByRoleName( final String roleName ) {
 		try {
-			final Query query = getEntityManager().createNamedQuery( "UserRole.findByRolename" );
+			final Query query = getEntityManager().createNamedQuery( "FindByUserRolename" );
 			query.setParameter( FIELD_ROLENAME, roleName );
 			return ( UserRole )query.getSingleResult();
 		}
@@ -55,7 +55,7 @@ public class UserRole extends MSSQLModel implements Role {
 			return null;
 		}
 	}
-	
+
 	@Override
 	public String getName() {
 		return roleName;

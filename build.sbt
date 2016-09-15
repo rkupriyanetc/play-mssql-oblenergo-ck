@@ -9,18 +9,18 @@ version := "1.0-SNAPSHOT"
 herokuAppName in Compile := "play-authenticate"
 
 val appDependencies = Seq(
-  "be.objectify"           %% "deadbolt-java"           % "2.5.0",
+  "be.objectify"                   %% "deadbolt-java"           % "2.5.0",
   // Comment the next line for local development of the Play Authentication core:
-  "com.feth"               %% "play-authenticate"       % "0.8.1-SNAPSHOT",
+  "com.feth"                       %% "play-authenticate"       % "0.8.1-SNAPSHOT",
   javaJpa,
-  "org.hibernate.javax.persistence" % "hibernate-jpa-2.1-api" % "1.0.0.Final",
-  "org.hibernate"           % "hibernate-entitymanager" % "5.2.2.Final",
+  "org.hibernate.javax.persistence" % "hibernate-jpa-2.1-api"   % "1.0.0.Final",
+  "org.hibernate"                   % "hibernate-entitymanager" % "5.2.2.Final",
   cache,
   javaWs,
   javaJdbc,
-  "org.webjars"             % "bootstrap"               % "3.2.0",
-  "org.easytesting"         % "fest-assert"             % "1.4"              % "test",
-  "org.seleniumhq.selenium" % "selenium-java"           % "2.52.0"           % "test"
+  "org.webjars"                     % "bootstrap"               % "3.2.0",
+  "org.easytesting"                 % "fest-assert"             % "1.4"              % "test",
+  "org.seleniumhq.selenium"         % "selenium-java"           % "2.52.0"           % "test"
 )
 
 // add resolver for deadbolt and easymail snapshots
