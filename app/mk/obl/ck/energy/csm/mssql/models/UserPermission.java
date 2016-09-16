@@ -3,6 +3,7 @@ package mk.obl.ck.energy.csm.mssql.models;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
@@ -12,7 +13,8 @@ import be.objectify.deadbolt.java.models.Permission;
 
 @Entity
 @Table( name = "permissions" )
-@NamedQuery( name = "FindByPermissionValue", query = "SELECT p FROM UserPermission p where p.value = :value" )
+@NamedQueries( {
+		@NamedQuery( name = "FindByPermissionValue", query = "select p from UserPermission p where p.value = :value" ) } )
 public class UserPermission extends MSSQLModel implements Permission {
 	
 	private static final String FIELD_PERMISSION_VALUE = "value";

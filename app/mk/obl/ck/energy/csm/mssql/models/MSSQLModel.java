@@ -29,11 +29,6 @@ public abstract class MSSQLModel implements MSSQLIdentifier {
 	@PersistenceContext( unitName = DEFAULT_PERSISTENCE_UNIT )
 	private static EntityManager	em;
 	
-	@Id
-	protected long								id;
-	
-	protected abstract String classInfo();
-	
 	public static EntityManager getEntityManager() {
 		if ( em == null ) {
 			final EntityManagerFactory emf = Persistence.createEntityManagerFactory( DEFAULT_PERSISTENCE_UNIT );
@@ -44,8 +39,13 @@ public abstract class MSSQLModel implements MSSQLIdentifier {
 		return em;
 	}
 	
+	@Id
+	protected Long id;
+	
+	protected abstract String classInfo();
+	
 	@Override
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 	

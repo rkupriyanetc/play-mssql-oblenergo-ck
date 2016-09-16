@@ -15,13 +15,12 @@ import javax.persistence.Table;
 
 import com.avaje.ebean.annotation.EnumValue;
 
-import mk.obl.ck.energy.csm.models.User;
 import play.data.format.Formats;
 
 @Entity
 @Table( name = "actions" )
 @NamedQueries( {
-		@NamedQuery( name = "FindByTokenAndType", query = "select a FROM TokenAction a where a.token = :token and a.type = :type" ),
+		@NamedQuery( name = "FindByTokenAndType", query = "select a from TokenAction a where a.token = :token and a.type = :type" ),
 		@NamedQuery( name = "FindByUserAndType", query = "select a from TokenAction a where a.user = :user_id and a.type = :type" ) } )
 public class TokenAction extends MSSQLModel {
 	
@@ -58,7 +57,7 @@ public class TokenAction extends MSSQLModel {
 	
 	public static void deleteByUser( final User u, final Type type ) {
 		final Query query = getEntityManager().createNamedQuery( "FindByUserAndType" );
-		query.setParameter( FIELD_USER_ID, u.ge );
+		query.setParameter( FIELD_USER_ID, u.getId() );
 		query.setParameter( FIELD_TYPE, type.name() );
 		final List< TokenAction > iterator = query.getResultList();
 		// find.where().eq( "targetUser.id", u.id ).eq( "type", type
@@ -121,7 +120,9 @@ public class TokenAction extends MSSQLModel {
 		sb.append( created );
 		sb.append( ", Expires : " );
 		sb.append( expires );
-		return sb.toString();
+		final String s = sb.toString();
+		LOGGER.info( s );
+		return s;
 	}
 	
 	public boolean isValid() {

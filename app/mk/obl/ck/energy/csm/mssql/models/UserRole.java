@@ -3,6 +3,7 @@ package mk.obl.ck.energy.csm.mssql.models;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
@@ -12,7 +13,7 @@ import be.objectify.deadbolt.java.models.Role;
 
 @Entity
 @Table( name = "roles" )
-@NamedQuery( name = "FindByUserRolename", query = "SELECT r FROM UserRole r where r.roleName = :rolename" )
+@NamedQueries( { @NamedQuery( name = "FindByUserRolename", query = "select r from UserRole r where r.roleName = :rolename" ) } )
 public class UserRole extends MSSQLModel implements Role {
 	
 	public static final String	OPER_ROLE_NAME	= "OPER";
