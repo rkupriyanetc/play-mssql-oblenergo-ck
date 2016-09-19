@@ -8,9 +8,12 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.avaje.ebean.ExpressionList;
 import com.feth.play.module.pa.providers.password.UsernamePasswordAuthUser;
 import com.feth.play.module.pa.user.AuthUser;
 import com.feth.play.module.pa.user.AuthUserIdentity;
@@ -27,6 +30,9 @@ import play.data.validation.Constraints;
 
 @Entity
 @Table( name = "users" )
+@NamedQueries( { @NamedQuery( name = "FindAuthUser", query = "select p from UserPermission p where p.value = :value" ),
+		@NamedQuery( name = "FindUsernamePasswordAuthUser", query = "select a from TokenAction a where a.user = :user_id and a.type = :type" ),
+		@NamedQuery( name = "FindByEmail", query = "select u from User u where u.active = true and u.email = :email" ) } )
 public class User extends MSSQLModel implements Subject {
 	
 	public static void addLinkedAccount( final AuthUser oldUser, final AuthUser newUser ) {
@@ -81,20 +87,37 @@ public class User extends MSSQLModel implements Subject {
 			return getAuthUserFind( identity ).findUnique();
 	}
 	
+	public static User findByUsernamePasswordIdentity( final UsernamePasswordAuthUser identity ) {
+		return getUsernamePasswordAuthUserFind( identity ).findUnique();
+	}
+	
+	private static ExpressionList< User > getAuthUserFind( final AuthUserIdentity identity ) {
+		return find.where().eq( "active", true ).eq( "linkedAccounts.providerUserId", identity.getId() )
+				.eq( "linkedAccounts.providerKey", identity.getProvider() );
+	}
+
+	private static ExpressionList< User > getEmailUserFind( final String email ) {
+		return find.where().eq( "active", true ).eq( "email", email );
+	}
+
+	private static ExpressionList< User > getUsernamePasswordAuthUserFind( final UsernamePasswordAuthUser identity ) {
+		return getEmailUserFind( identity.getEmail() ).eq( "linkedAccounts.providerKey", identity.getProvider() );
+	}
+
 	public static void merge( final AuthUser oldUser, final AuthUser newUser ) {
 		User.findByAuthUserIdentity( oldUser ).merge( User.findByAuthUserIdentity( newUser ) );
 	}
 	
 	public static void setLastLoginDate( final AuthUser knownUser ) {
 		final User u = User.findByAuthUserIdentity( knownUser );
-		u.lastLogin = new java.sql.Date( java.lang.System.currentTimeMillis() );
-		u.save();
+		u.lastLogin = new Date( java.lang.System.currentTimeMillis() );
+		getEntityManager().merge( u );
 	}
 	
 	public static void verify( final User unverified ) {
 		// You might want to wrap this into a transaction
 		unverified.emailValidated = true;
-		unverified.save();
+		getEntityManager().merge( unverified );
 		TokenAction.deleteByUser( unverified, Type.EMAIL_VERIFICATION );
 	}
 	
@@ -127,7 +150,7 @@ public class User extends MSSQLModel implements Subject {
 	private List< UserPermission >	permissions;
 	
 	public void changePassword( final UsernamePasswordAuthUser authUser, final boolean create ) {
-		LinkedAccount a = this.getAccountByProvider( authUser.getProvider() );
+		LinkedAccount a = LinkedAccount.findByProviderKey( this, authUser.getProvider() );
 		if ( a == null )
 			if ( create ) {
 				a = LinkedAccount.create( authUser );
@@ -138,7 +161,7 @@ public class User extends MSSQLModel implements Subject {
 		a.providerUserId = authUser.getHashedPassword();
 		getEntityManager().merge( a );
 	}
-	
+
 	@Override
 	protected String classInfo() {
 		final StringBuffer sb = new StringBuffer( "\n" );
