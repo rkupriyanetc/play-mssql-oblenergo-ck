@@ -7,13 +7,15 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.OneToMany;
+import javax.persistence.Query;
 import javax.persistence.Table;
 
-import com.avaje.ebean.ExpressionList;
 import com.feth.play.module.pa.providers.password.UsernamePasswordAuthUser;
 import com.feth.play.module.pa.user.AuthUser;
 import com.feth.play.module.pa.user.AuthUserIdentity;
@@ -30,10 +32,17 @@ import play.data.validation.Constraints;
 
 @Entity
 @Table( name = "users" )
-@NamedQueries( { @NamedQuery( name = "FindAuthUser", query = "select p from UserPermission p where p.value = :value" ),
-		@NamedQuery( name = "FindUsernamePasswordAuthUser", query = "select a from TokenAction a where a.user = :user_id and a.type = :type" ),
+@NamedQueries( {
+		@NamedQuery( name = "FindAuthUser", query = "select u from User u left join LinkedAccount a on a.user = u where u.active = true and a.providerKey = :linked_account_provider_key and a.providerUserId = :linked_account_provider_user_id" ),
+		@NamedQuery( name = "FindUsernamePasswordAuthUser", query = "select u from User u left join LinkedAccount a on a.user = u where u.active = true and u.email = :email and a.providerKey = :linked_account_provider_key" ),
 		@NamedQuery( name = "FindByEmail", query = "select u from User u where u.active = true and u.email = :email" ) } )
 public class User extends MSSQLModel implements Subject {
+	
+	private static final String	FIELD_EMAIL														= "email";
+	
+	private static final String	FIELD_LINKED_ACCOUNT_PROVIDER_KEY			= "linked_account_provider_key";
+	
+	private static final String	FIELD_LINKED_ACCOUNT_PROVIDER_USER_ID	= "linked_account_provider_user_id";
 	
 	public static void addLinkedAccount( final AuthUser oldUser, final AuthUser newUser ) {
 		final User u = User.findByAuthUserIdentity( oldUser );
@@ -84,26 +93,93 @@ public class User extends MSSQLModel implements Subject {
 		if ( identity instanceof UsernamePasswordAuthUser )
 			return findByUsernamePasswordIdentity( ( UsernamePasswordAuthUser )identity );
 		else
-			return getAuthUserFind( identity ).findUnique();
+			return getAuthUserFind( identity ).get( 0 );
 	}
 	
 	public static User findByUsernamePasswordIdentity( final UsernamePasswordAuthUser identity ) {
-		return getUsernamePasswordAuthUserFind( identity ).findUnique();
+		return getUsernamePasswordAuthUserFind( identity ).get( 0 );
 	}
 	
-	private static ExpressionList< User > getAuthUserFind( final AuthUserIdentity identity ) {
-		return find.where().eq( "active", true ).eq( "linkedAccounts.providerUserId", identity.getId() )
-				.eq( "linkedAccounts.providerKey", identity.getProvider() );
+	private static List< User > getAuthUserFind( final AuthUserIdentity identity ) {
+		// return find.where().eq( "active", true ).eq(
+		// "linkedAccounts.providerUserId", identity.getId() ).eq(
+		// "linkedAccounts.providerKey", identity.getProvider() );
+		try {
+			final Query query = getEntityManager().createNamedQuery( "FindAuthUser" );
+			query.setParameter( FIELD_LINKED_ACCOUNT_PROVIDER_USER_ID, identity.getId() );
+			query.setParameter( FIELD_LINKED_ACCOUNT_PROVIDER_KEY, identity.getProvider() );
+			return query.getResultList();
+		}
+		catch ( final IllegalStateException ise ) {
+			LOGGER.error( "{}", ise );
+			return null;
+		}
+		catch ( final IllegalArgumentException iae ) {
+			LOGGER.error( "{}", iae );
+			return null;
+		}
+		catch ( final EntityNotFoundException enfe ) {
+			LOGGER.error( "{}", enfe );
+			return null;
+		}
+		catch ( final NonUniqueResultException nure ) {
+			LOGGER.error( "{}", nure );
+			return null;
+		}
 	}
-
-	private static ExpressionList< User > getEmailUserFind( final String email ) {
-		return find.where().eq( "active", true ).eq( "email", email );
+	
+	private static List< User > getEmailUserFind( final String email ) {
+		// return find.where().eq( "active", true ).eq( "email", email );
+		try {
+			final Query query = getEntityManager().createNamedQuery( "FindByEmail" );
+			query.setParameter( FIELD_EMAIL, email );
+			return query.getResultList();
+		}
+		catch ( final IllegalStateException ise ) {
+			LOGGER.error( "{}", ise );
+			return null;
+		}
+		catch ( final IllegalArgumentException iae ) {
+			LOGGER.error( "{}", iae );
+			return null;
+		}
+		catch ( final EntityNotFoundException enfe ) {
+			LOGGER.error( "{}", enfe );
+			return null;
+		}
+		catch ( final NonUniqueResultException nure ) {
+			LOGGER.error( "{}", nure );
+			return null;
+		}
 	}
-
-	private static ExpressionList< User > getUsernamePasswordAuthUserFind( final UsernamePasswordAuthUser identity ) {
-		return getEmailUserFind( identity.getEmail() ).eq( "linkedAccounts.providerKey", identity.getProvider() );
+	
+	private static List< User > getUsernamePasswordAuthUserFind( final UsernamePasswordAuthUser identity ) {
+		// return getEmailUserFind( identity.getEmail() ).eq(
+		// "linkedAccounts.providerKey", identity.getProvider() );
+		try {
+			final Query query = getEntityManager().createNamedQuery( "FindUsernamePasswordAuthUser" );
+			query.setParameter( FIELD_EMAIL, identity.getEmail() );
+			query.setParameter( FIELD_LINKED_ACCOUNT_PROVIDER_KEY, identity.getProvider() );
+			return query.getResultList();
+		}
+		catch ( final IllegalStateException ise ) {
+			LOGGER.error( "{}", ise );
+			return null;
+		}
+		catch ( final IllegalArgumentException iae ) {
+			LOGGER.error( "{}", iae );
+			return null;
+		}
+		catch ( final EntityNotFoundException enfe ) {
+			LOGGER.error( "{}", enfe );
+			return null;
+		}
+		catch ( final NonUniqueResultException nure ) {
+			LOGGER.error( "{}", nure );
+			return null;
+		}
 	}
-
+	
 	public static void merge( final AuthUser oldUser, final AuthUser newUser ) {
 		User.findByAuthUserIdentity( oldUser ).merge( User.findByAuthUserIdentity( newUser ) );
 	}
@@ -161,7 +237,7 @@ public class User extends MSSQLModel implements Subject {
 		a.providerUserId = authUser.getHashedPassword();
 		getEntityManager().merge( a );
 	}
-
+	
 	@Override
 	protected String classInfo() {
 		final StringBuffer sb = new StringBuffer( "\n" );
