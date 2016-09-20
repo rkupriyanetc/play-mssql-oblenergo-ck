@@ -3,7 +3,9 @@ package mk.obl.ck.energy.csm.mssql.models;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -87,6 +89,15 @@ public class User extends MSSQLModel implements Subject {
 		return user;
 	}
 	
+	public static boolean existsByAuthUserIdentity( final AuthUserIdentity identity ) {
+		final List< User > exp;
+		if ( identity instanceof UsernamePasswordAuthUser )
+			exp = getUsernamePasswordAuthUserFind( ( UsernamePasswordAuthUser )identity );
+		else
+			exp = getAuthUserFind( identity );
+		return exp != null && !exp.isEmpty();
+	}
+	
 	public static User findByAuthUserIdentity( final AuthUserIdentity identity ) {
 		if ( identity == null )
 			return null;
@@ -94,6 +105,10 @@ public class User extends MSSQLModel implements Subject {
 			return findByUsernamePasswordIdentity( ( UsernamePasswordAuthUser )identity );
 		else
 			return getAuthUserFind( identity ).get( 0 );
+	}
+	
+	public static User findByEmail( final String email ) {
+		return getEmailUserFind( email ).get( 0 );
 	}
 	
 	public static User findByUsernamePasswordIdentity( final UsernamePasswordAuthUser identity ) {
@@ -230,11 +245,11 @@ public class User extends MSSQLModel implements Subject {
 		if ( a == null )
 			if ( create ) {
 				a = LinkedAccount.create( authUser );
-				a.user = this;
+				a.setTargetUser( this );
 				getEntityManager().persist( a );
 			} else
 				throw new RuntimeException( "Account not enabled for password usage" );
-		a.providerUserId = authUser.getHashedPassword();
+		a.setProviderUserId( authUser.getHashedPassword() );
 		getEntityManager().merge( a );
 	}
 	
@@ -265,9 +280,21 @@ public class User extends MSSQLModel implements Subject {
 		return s;
 	}
 	
+	public String getEmail() {
+		return this.email;
+	}
+	
 	@Override
 	public String getIdentifier() {
 		return Long.toString( this.getId() );
+	}
+	
+	public List< LinkedAccount > getLinkedAccounts() {
+		return this.linkedAccounts;
+	}
+	
+	public String getName() {
+		return this.name;
 	}
 	
 	@Override
@@ -275,9 +302,20 @@ public class User extends MSSQLModel implements Subject {
 		return this.permissions;
 	}
 	
+	public Set< String > getProviders() {
+		final Set< String > providerKeys = new HashSet< String >( this.linkedAccounts.size() );
+		for ( final LinkedAccount acc : this.linkedAccounts )
+			providerKeys.add( acc.getProviderKey() );
+		return providerKeys;
+	}
+	
 	@Override
 	public List< ? extends Role > getRoles() {
 		return this.roles;
+	}
+	
+	public boolean isEmailValidated() {
+		return this.emailValidated;
 	}
 	
 	public void merge( final User otherUser ) {

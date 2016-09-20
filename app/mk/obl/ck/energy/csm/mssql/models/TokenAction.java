@@ -125,6 +125,18 @@ public class TokenAction extends MSSQLModel {
 		return s;
 	}
 	
+	public User getTargetUser() {
+		return this.user;
+	}
+	
+	public String getToken() {
+		return this.token;
+	}
+	
+	public Type getType() {
+		return this.type;
+	}
+	
 	public boolean isValid() {
 		return this.expires.after( new Date() );
 	}

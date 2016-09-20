@@ -65,13 +65,13 @@ public class LinkedAccount extends MSSQLModel {
 	}
 	
 	@ManyToOne
-	public User		user;
+	private User		user;
 	
 	@Column( name = "user_provider", length = 30 )
-	public String	providerUserId;
+	private String	providerUserId;
 	
 	@Column( name = "provider_key", length = 30 )
-	public String	providerKey;
+	private String	providerKey;
 	
 	@Override
 	protected String classInfo() {
@@ -86,6 +86,30 @@ public class LinkedAccount extends MSSQLModel {
 		final String s = sb.toString();
 		LOGGER.info( s );
 		return s;
+	}
+	
+	public String getProviderKey() {
+		return this.providerKey;
+	}
+	
+	public String getProviderUserId() {
+		return this.providerUserId;
+	}
+	
+	public User getTargetUser() {
+		return this.user;
+	}
+	
+	public void setProviderKey( final String providerKey ) {
+		this.providerKey = providerKey;
+	}
+	
+	public void setProviderUserId( final String providerUserId ) {
+		this.providerUserId = providerUserId;
+	}
+	
+	public void setTargetUser( final User user ) {
+		this.user = user;
 	}
 	
 	public void update( final AuthUser authUser ) {
