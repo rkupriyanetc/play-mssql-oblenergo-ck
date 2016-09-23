@@ -53,6 +53,7 @@ public class UserRole extends MSSQLModel implements Role {
 	@Column( name = "role_name", length = 5 )
 	private final String roleName;
 	
+	// public UserRole() {}
 	private UserRole( final String roleName ) {
 		this.roleName = roleName;
 	}

@@ -6,10 +6,8 @@ import com.feth.play.module.pa.PlayAuthenticate;
 import com.feth.play.module.pa.controllers.AuthenticateBase;
 import com.feth.play.module.pa.user.AuthUser;
 
-import be.objectify.deadbolt.java.actions.Group;
-import be.objectify.deadbolt.java.actions.Restrict;
 import be.objectify.deadbolt.java.actions.SubjectPresent;
-import mk.obl.ck.energy.csm.models.User;
+import mk.obl.ck.energy.csm.mssql.models.User;
 import mk.obl.ck.energy.csm.providers.MyUsernamePasswordAuthProvider;
 import mk.obl.ck.energy.csm.providers.MyUsernamePasswordAuthUser;
 import mk.obl.ck.energy.csm.service.UserProvider;
@@ -34,7 +32,7 @@ public class Account extends Controller {
 		
 		@Required
 		@NonEmpty
-		public Boolean accept;
+		private Boolean accept;
 		
 		public Boolean getAccept() {
 			return accept;
@@ -49,11 +47,11 @@ public class Account extends Controller {
 		
 		@MinLength( 3 )
 		@Required
-		public String	password;
+		private String	password;
 		
 		@MinLength( 3 )
 		@Required
-		public String	repeatPassword;
+		private String	repeatPassword;
 		
 		public String getPassword() {
 			return password;
@@ -126,17 +124,17 @@ public class Account extends Controller {
 		return ok( ask_merge.render( this.userProvider, ACCEPT_FORM, aUser, bUser ) );
 	}
 	
-	@Restrict( @Group( Application.USER_ROLE ) )
+	@SubjectPresent
 	public Result changePassword() {
 		AuthenticateBase.noCache( response() );
 		final User u = this.userProvider.getUser( session() );
-		if ( !u.emailValidated )
+		if ( !u.isEmailValidated() )
 			return ok( unverified.render( this.userProvider ) );
 		else
 			return ok( password_change.render( this.userProvider, PASSWORD_CHANGE_FORM ) );
 	}
 	
-	@Restrict( @Group( Application.USER_ROLE ) )
+	@SubjectPresent
 	public Result doChangePassword() {
 		AuthenticateBase.noCache( response() );
 		final Form< Account.PasswordChange > filledForm = PASSWORD_CHANGE_FORM.bindFromRequest();
@@ -201,22 +199,22 @@ public class Account extends Controller {
 		return ok( link.render( this.userProvider, this.auth ) );
 	}
 	
-	@Restrict( @Group( Application.USER_ROLE ) )
+	@SubjectPresent
 	public Result verifyEmail() {
 		AuthenticateBase.noCache( response() );
 		final User user = this.userProvider.getUser( session() );
-		if ( user.emailValidated )
+		if ( user.isEmailValidated() )
 			// E-Mail has been validated already
 			flash( Application.FLASH_MESSAGE_KEY,
 					this.msg.preferred( request() ).at( "playauthenticate.verify_email.error.already_validated" ) );
 		else
-			if ( user.email != null && !user.email.trim().isEmpty() ) {
+			if ( user.getEmail() != null && !user.getEmail().trim().isEmpty() ) {
 				flash( Application.FLASH_MESSAGE_KEY,
-						this.msg.preferred( request() ).at( "playauthenticate.verify_email.message.instructions_sent", user.email ) );
+						this.msg.preferred( request() ).at( "playauthenticate.verify_email.message.instructions_sent", user.getEmail() ) );
 				this.myUsrPaswProvider.sendVerifyEmailMailingAfterSignup( user, ctx() );
 			} else
 				flash( Application.FLASH_MESSAGE_KEY,
-						this.msg.preferred( request() ).at( "playauthenticate.verify_email.error.set_email_first", user.email ) );
+						this.msg.preferred( request() ).at( "playauthenticate.verify_email.error.set_email_first", user.getEmail() ) );
 		return redirect( routes.Application.profile() );
 	}
 }

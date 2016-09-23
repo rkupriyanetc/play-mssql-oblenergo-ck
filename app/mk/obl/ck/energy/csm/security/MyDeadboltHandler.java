@@ -11,7 +11,7 @@ import be.objectify.deadbolt.java.AbstractDeadboltHandler;
 import be.objectify.deadbolt.java.DynamicResourceHandler;
 import be.objectify.deadbolt.java.ExecutionContextProvider;
 import be.objectify.deadbolt.java.models.Subject;
-import mk.obl.ck.energy.csm.models.User;
+import mk.obl.ck.energy.csm.mssql.models.User;
 import play.mvc.Http;
 import play.mvc.Result;
 
@@ -42,15 +42,15 @@ public class MyDeadboltHandler extends AbstractDeadboltHandler {
 	}
 	
 	@Override
+	public CompletionStage< Optional< DynamicResourceHandler > > getDynamicResourceHandler( final Http.Context context ) {
+		return CompletableFuture.completedFuture( Optional.empty() );
+	}
+	
+	@Override
 	public CompletionStage< Optional< ? extends Subject > > getSubject( final Http.Context context ) {
 		final AuthUserIdentity u = this.auth.getUser( context );
 		// Caching might be a good idea here
 		return CompletableFuture.completedFuture( Optional.ofNullable( ( Subject )User.findByAuthUserIdentity( u ) ) );
-	}
-	
-	@Override
-	public CompletionStage< Optional< DynamicResourceHandler > > getDynamicResourceHandler( final Http.Context context ) {
-		return CompletableFuture.completedFuture( Optional.empty() );
 	}
 	
 	@Override

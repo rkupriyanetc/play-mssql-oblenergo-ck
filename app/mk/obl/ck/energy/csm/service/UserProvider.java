@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import com.feth.play.module.pa.PlayAuthenticate;
 import com.feth.play.module.pa.user.AuthUser;
 
-import mk.obl.ck.energy.csm.models.User;
+import mk.obl.ck.energy.csm.mssql.models.User;
 import play.mvc.Http.Session;
 
 /**

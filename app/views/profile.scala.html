@@ -1,7 +1,7 @@
 @import mk.obl.ck.energy.csm.service.UserProvider
 @import mk.obl.ck.energy.csm.controllers._
 
-@(playAuth: com.feth.play.module.pa.PlayAuthenticate, userProvider: UserProvider, localUser: mk.obl.ck.energy.csm.models.User = null)
+@(playAuth: com.feth.play.module.pa.PlayAuthenticate, userProvider: UserProvider, localUser: mk.obl.ck.energy.csm.mssql.models.User = null)
 
 @import com.feth.play.module.pa.views.html._
 
@@ -9,18 +9,18 @@
 
     <h1>@Messages("playauthenticate.profile.title")</h1>
     <p>
-    Your name is @localUser.name and your email address is @if(!localUser.email) {<em>&lt;unknown&gt;</em>.} else {
-    	@localUser.email.
+    Your name is @localUser.getName() and your email address is @if(!localUser.getEmail()) {<em>&lt;unknown&gt;</em>.} else {
+    	@localUser.getEmail().
 	    <i>
-	    @if(!localUser.emailValidated && localUser.email) {
+	    @if(!localUser.isEmailValidated() && localUser.getEmail()) {
 	      (<a href="@routes.Account.verifyEmail">unverified - click to verify</a>)
 	    } else {
 	      (verified)
 	    }</i>
     }
     <br />
-        @if(localUser.firstName && localUser.lastName) {
-            Your first name is @localUser.firstName and your last name is @localUser.lastName
+        @if(localUser.getFirstName() && localUser.getLastName()) {
+            Your first name is @localUser.getFirstName() and your last name is @localUser.getLastName()
             <br/>
         }
     @defining(localUser.getProviders()) { providers =>

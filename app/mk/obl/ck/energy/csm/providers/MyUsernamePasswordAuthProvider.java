@@ -47,6 +47,14 @@ public class MyUsernamePasswordAuthProvider extends
 		public MyIdentity( final String email ) {
 			this.email = email;
 		}
+		
+		public String getEmail() {
+			return email;
+		}
+		
+		public void setEmail( final String email ) {
+			this.email = email;
+		}
 	}
 	
 	public static class MyLogin extends MyIdentity
@@ -57,17 +65,8 @@ public class MyUsernamePasswordAuthProvider extends
 		protected String password;
 		
 		@Override
-		public String getEmail() {
-			return email;
-		}
-		
-		@Override
 		public String getPassword() {
 			return password;
-		}
-		
-		public void setEmail( final String email ) {
-			this.email = email;
 		}
 		
 		public void setPassword( final String password ) {

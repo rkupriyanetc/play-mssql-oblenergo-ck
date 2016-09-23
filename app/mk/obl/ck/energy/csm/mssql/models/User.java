@@ -284,9 +284,21 @@ public class User extends MSSQLModel implements Subject {
 		return this.email;
 	}
 	
+	public String getFirstName() {
+		return this.firstName;
+	}
+	
 	@Override
 	public String getIdentifier() {
 		return Long.toString( this.getId() );
+	}
+	
+	public Date getLastLogin() {
+		return this.lastLogin;
+	}
+	
+	public String getLastName() {
+		return this.lastName;
 	}
 	
 	public List< LinkedAccount > getLinkedAccounts() {
@@ -312,6 +324,10 @@ public class User extends MSSQLModel implements Subject {
 	@Override
 	public List< ? extends Role > getRoles() {
 		return this.roles;
+	}
+	
+	public boolean isActive() {
+		return this.active;
 	}
 	
 	public boolean isEmailValidated() {
