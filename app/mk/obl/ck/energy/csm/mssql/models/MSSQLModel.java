@@ -1,7 +1,9 @@
 package mk.obl.ck.energy.csm.mssql.models;
 
+import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Persistence;
@@ -40,6 +42,8 @@ public abstract class MSSQLModel implements MSSQLIdentifier {
 	}
 	
 	@Id
+	@GeneratedValue
+	@Column( updatable = false, columnDefinition = "bigint" )
 	protected Long id;
 	
 	protected abstract String classInfo();

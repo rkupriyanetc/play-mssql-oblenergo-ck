@@ -1,5 +1,6 @@
 package mk.obl.ck.energy.csm.mssql.models;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityNotFoundException;
@@ -50,6 +51,7 @@ public class UserRole extends MSSQLModel implements Role {
 		}
 	}
 	
+	@Basic
 	@Column( name = "role_name", length = 5 )
 	private final String roleName;
 	

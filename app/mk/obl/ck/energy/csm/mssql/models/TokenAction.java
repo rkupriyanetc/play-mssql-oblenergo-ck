@@ -3,9 +3,14 @@ package mk.obl.ck.energy.csm.mssql.models;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -18,7 +23,7 @@ import com.avaje.ebean.annotation.EnumValue;
 import play.data.format.Formats;
 
 @Entity
-@Table( name = "actions" )
+@Table( name = "tokens" )
 @NamedQueries( {
 		@NamedQuery( name = "FindByTokenAndType", query = "select a from TokenAction a where a.token = :token and a.type = :type" ),
 		@NamedQuery( name = "FindByUserAndType", query = "select a from TokenAction a where a.user = :user_id and a.type = :type" ) } )
@@ -91,18 +96,25 @@ public class TokenAction extends MSSQLModel {
 		}
 	}
 	
-	@Column( unique = true )
+	@Basic
+	@Column( unique = true, length = 70 )
 	private String	token;
 	
-	@ManyToOne
+	@ManyToOne( fetch = FetchType.LAZY )
+	@JoinColumn( name = "user_id", nullable = false )
 	private User		user;
 	
+	@Basic
+	@Enumerated( EnumType.STRING )
+	@Column( length = 2 )
 	private Type		type;
 	
 	@Formats.DateTime( pattern = "yyyy-MM-dd HH:mm:ss" )
+	@Column( columnDefinition = "datetime not null" )
 	private Date		created;
 	
 	@Formats.DateTime( pattern = "yyyy-MM-dd HH:mm:ss" )
+	@Column( columnDefinition = "datetime not null" )
 	private Date		expires;
 	
 	@Override

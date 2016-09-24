@@ -1,5 +1,6 @@
 package mk.obl.ck.energy.csm.mssql.models;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityNotFoundException;
@@ -43,6 +44,7 @@ public class UserPermission extends MSSQLModel implements Permission {
 		}
 	}
 	
+	@Basic
 	@Column( length = 50 )
 	private String value;
 	

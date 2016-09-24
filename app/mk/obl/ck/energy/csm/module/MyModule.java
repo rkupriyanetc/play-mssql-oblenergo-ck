@@ -10,7 +10,6 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 import mk.obl.ck.energy.csm.providers.MyStupidBasicAuthProvider;
 import mk.obl.ck.energy.csm.providers.MyUsernamePasswordAuthProvider;
-import mk.obl.ck.energy.csm.service.DataInitializer;
 import mk.obl.ck.energy.csm.service.MyResolver;
 import mk.obl.ck.energy.csm.service.MyUserService;
 
@@ -23,7 +22,7 @@ public class MyModule extends AbstractModule {
 	protected void configure() {
 		install( new FactoryModuleBuilder().implement( IMailer.class, Mailer.class ).build( MailerFactory.class ) );
 		bind( Resolver.class ).to( MyResolver.class );
-		bind( DataInitializer.class ).asEagerSingleton();
+		// bind( DataInitializer.class ).asEagerSingleton();
 		bind( MyUserService.class ).asEagerSingleton();
 		// bind(GoogleAuthProvider.class).asEagerSingleton();
 		// bind(FacebookAuthProvider.class).asEagerSingleton();

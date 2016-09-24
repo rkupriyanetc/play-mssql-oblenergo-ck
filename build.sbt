@@ -1,4 +1,4 @@
-organization := "obl.ck.energy.gov.ua"
+organization := "mk.obl.ck.energy.gov.ua"
 
 name := "play-mssql-oblenergo-ck"
 
@@ -12,7 +12,7 @@ val appDependencies = Seq(
   "be.objectify"                   %% "deadbolt-java"           % "2.5.0",
   // Comment the next line for local development of the Play Authentication core:
   "com.feth"                       %% "play-authenticate"       % "0.8.1-SNAPSHOT",
-  javaJpa,
+  //javaJpa,
   "org.hibernate.javax.persistence" % "hibernate-jpa-2.1-api"   % "1.0.0.Final",
   "org.hibernate"                   % "hibernate-entitymanager" % "5.2.2.Final",
   cache,

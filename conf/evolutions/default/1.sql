@@ -3,112 +3,112 @@
 
 # --- !Ups
 
-create table linked_account (
+create table linkeds (
   id                            numeric(19) identity(1,1) not null,
-  user_id                       numeric(19),
-  provider_user_id              varchar(255),
-  provider_key                  varchar(255),
-  constraint pk_linked_account primary key (id)
+  user_id                       numeric(19) not null,
+  user_provider                 varchar(30),
+  provider_key                  varchar(30),
+  constraint pk_linkeds primary key (id)
 );
 
-create table security_role (
+create table tokens (
   id                            numeric(19) identity(1,1) not null,
-  role_name                     varchar(255),
-  constraint pk_security_role primary key (id)
-);
-
-create table token_action (
-  id                            numeric(19) identity(1,1) not null,
-  token                         varchar(255),
-  target_user_id                numeric(19),
+  token                         varchar(70),
+  user_id                       numeric(19) not null,
   type                          varchar(2),
-  created                       datetime2,
-  expires                       datetime2,
-  constraint ck_token_action_type check (type in ('PR','EV')),
-  constraint uq_token_action_token unique (token),
-  constraint pk_token_action primary key (id)
+  created                       datetime not null,
+  expires                       datetime not null,
+  constraint ck_tokens_type check (type in ('PR','EV')),
+  constraint uq_tokens_token unique (token),
+  constraint pk_tokens primary key (id)
 );
 
 create table users (
   id                            numeric(19) identity(1,1) not null,
-  email                         varchar(255),
-  name                          varchar(255),
-  first_name                    varchar(255),
-  last_name                     varchar(255),
-  last_login                    datetime2,
+  email                         varchar(70),
+  name                          varchar(30),
+  firstname                     varchar(30),
+  lastname                      varchar(30),
+  lastlogin                     datetime null,
   active                        bit default 0,
   email_validated               bit default 0,
   constraint pk_users primary key (id)
 );
 
-create table users_security_role (
-  users_id                      numeric(19) not null,
-  security_role_id              numeric(19) not null,
-  constraint pk_users_security_role primary key (users_id,security_role_id)
+create table users_roles (
+  user_id                       numeric(19) not null,
+  role_id                       numeric(19) not null,
+  constraint pk_users_roles primary key (user_id,role_id)
 );
 
-create table users_user_permission (
-  users_id                      numeric(19) not null,
-  user_permission_id            numeric(19) not null,
-  constraint pk_users_user_permission primary key (users_id,user_permission_id)
+create table users_permissions (
+  user_id                       numeric(19) not null,
+  permission_id                 numeric(19) not null,
+  constraint pk_users_permissions primary key (user_id,permission_id)
 );
 
-create table user_permission (
+create table permissions (
   id                            numeric(19) identity(1,1) not null,
-  value                         varchar(255),
-  constraint pk_user_permission primary key (id)
+  value                         varchar(50),
+  constraint pk_permissions primary key (id)
 );
 
-alter table linked_account add constraint fk_linked_account_user_id foreign key (user_id) references users (id);
-create index ix_linked_account_user_id on linked_account (user_id);
+create table roles (
+  id                            numeric(19) identity(1,1) not null,
+  role_name                     varchar(5),
+  constraint pk_roles primary key (id)
+);
 
-alter table token_action add constraint fk_token_action_target_user_id foreign key (target_user_id) references users (id);
-create index ix_token_action_target_user_id on token_action (target_user_id);
+alter table linkeds add constraint fk_linkeds_user_id foreign key (user_id) references users (id);
+create index ix_linkeds_user_id on linkeds (user_id);
 
-alter table users_security_role add constraint fk_users_security_role_users foreign key (users_id) references users (id);
-create index ix_users_security_role_users on users_security_role (users_id);
+alter table tokens add constraint fk_tokens_user_id foreign key (user_id) references users (id);
+create index ix_tokens_user_id on tokens (user_id);
 
-alter table users_security_role add constraint fk_users_security_role_security_role foreign key (security_role_id) references security_role (id);
-create index ix_users_security_role_security_role on users_security_role (security_role_id);
+alter table users_roles add constraint fk_users_roles_users foreign key (user_id) references users (id);
+create index ix_users_roles_users on users_roles (user_id);
 
-alter table users_user_permission add constraint fk_users_user_permission_users foreign key (users_id) references users (id);
-create index ix_users_user_permission_users on users_user_permission (users_id);
+alter table users_roles add constraint fk_users_roles_roles foreign key (role_id) references roles (id);
+create index ix_users_roles_roles on users_roles (role_id);
 
-alter table users_user_permission add constraint fk_users_user_permission_user_permission foreign key (user_permission_id) references user_permission (id);
-create index ix_users_user_permission_user_permission on users_user_permission (user_permission_id);
+alter table users_permissions add constraint fk_users_permissions_users foreign key (user_id) references users (id);
+create index ix_users_permissions_users on users_permissions (user_id);
+
+alter table users_permissions add constraint fk_users_permissions_permissions foreign key (permission_id) references permissions (id);
+create index ix_users_permissions_permissions on users_permissions (permission_id);
 
 
 # --- !Downs
 
-IF OBJECT_ID('fk_linked_account_user_id', 'F') IS NOT NULL alter table linked_account drop constraint fk_linked_account_user_id;
-drop index if exists ix_linked_account_user_id;
+IF OBJECT_ID('fk_linkeds_user_id', 'F') IS NOT NULL alter table linkeds drop constraint fk_linkeds_user_id;
+drop index if exists ix_linkeds_user_id;
 
-IF OBJECT_ID('fk_token_action_target_user_id', 'F') IS NOT NULL alter table token_action drop constraint fk_token_action_target_user_id;
-drop index if exists ix_token_action_target_user_id;
+IF OBJECT_ID('fk_tokens_user_id', 'F') IS NOT NULL alter table tokens drop constraint fk_tokens_user_id;
+drop index if exists ix_tokens_user_id;
 
-IF OBJECT_ID('fk_users_security_role_users', 'F') IS NOT NULL alter table users_security_role drop constraint fk_users_security_role_users;
-drop index if exists ix_users_security_role_users;
+IF OBJECT_ID('fk_users_roles_users', 'F') IS NOT NULL alter table users_roles drop constraint fk_users_roles_users;
+drop index if exists ix_users_roles_users;
 
-IF OBJECT_ID('fk_users_security_role_security_role', 'F') IS NOT NULL alter table users_security_role drop constraint fk_users_security_role_security_role;
-drop index if exists ix_users_security_role_security_role;
+IF OBJECT_ID('fk_users_roles_roles', 'F') IS NOT NULL alter table users_roles drop constraint fk_users_roles_roles;
+drop index if exists ix_users_roles_roles;
 
-IF OBJECT_ID('fk_users_user_permission_users', 'F') IS NOT NULL alter table users_user_permission drop constraint fk_users_user_permission_users;
-drop index if exists ix_users_user_permission_users;
+IF OBJECT_ID('fk_users_permissions_users', 'F') IS NOT NULL alter table users_permissions drop constraint fk_users_permissions_users;
+drop index if exists ix_users_permissions_users;
 
-IF OBJECT_ID('fk_users_user_permission_user_permission', 'F') IS NOT NULL alter table users_user_permission drop constraint fk_users_user_permission_user_permission;
-drop index if exists ix_users_user_permission_user_permission;
+IF OBJECT_ID('fk_users_permissions_permissions', 'F') IS NOT NULL alter table users_permissions drop constraint fk_users_permissions_permissions;
+drop index if exists ix_users_permissions_permissions;
 
-IF OBJECT_ID('linked_account', 'U') IS NOT NULL drop table linked_account;
+IF OBJECT_ID('linkeds', 'U') IS NOT NULL drop table linkeds;
 
-IF OBJECT_ID('security_role', 'U') IS NOT NULL drop table security_role;
-
-IF OBJECT_ID('token_action', 'U') IS NOT NULL drop table token_action;
+IF OBJECT_ID('tokens', 'U') IS NOT NULL drop table tokens;
 
 IF OBJECT_ID('users', 'U') IS NOT NULL drop table users;
 
-IF OBJECT_ID('users_security_role', 'U') IS NOT NULL drop table users_security_role;
+IF OBJECT_ID('users_roles', 'U') IS NOT NULL drop table users_roles;
 
-IF OBJECT_ID('users_user_permission', 'U') IS NOT NULL drop table users_user_permission;
+IF OBJECT_ID('users_permissions', 'U') IS NOT NULL drop table users_permissions;
 
-IF OBJECT_ID('user_permission', 'U') IS NOT NULL drop table user_permission;
+IF OBJECT_ID('permissions', 'U') IS NOT NULL drop table permissions;
+
+IF OBJECT_ID('roles', 'U') IS NOT NULL drop table roles;
 

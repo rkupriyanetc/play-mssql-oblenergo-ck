@@ -1,8 +1,11 @@
 package mk.obl.ck.energy.csm.mssql.models;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -64,12 +67,15 @@ public class LinkedAccount extends MSSQLModel {
 		}
 	}
 	
-	@ManyToOne
+	@ManyToOne( fetch = FetchType.LAZY )
+	@JoinColumn( name = "user_id", nullable = false )
 	private User		user;
 	
+	@Basic
 	@Column( name = "user_provider", length = 30 )
 	private String	providerUserId;
 	
+	@Basic
 	@Column( name = "provider_key", length = 30 )
 	private String	providerKey;
 	

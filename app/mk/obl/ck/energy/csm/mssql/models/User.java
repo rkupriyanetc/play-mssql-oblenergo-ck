@@ -7,9 +7,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -212,32 +217,45 @@ public class User extends MSSQLModel implements Subject {
 		TokenAction.deleteByUser( unverified, Type.EMAIL_VERIFICATION );
 	}
 	
+	@Basic
 	@Constraints.Email
 	// if you make this unique, keep in mind that users *must* merge/link their
 	// accounts then on signup with additional providers
-	// @Column(unique = true)
+	@Column( length = 70 )
 	private String									email;
 	
+	@Basic
+	@Column( length = 30 )
 	private String									name;
 	
+	@Basic
+	@Column( name = "firstname", length = 30 )
 	private String									firstName;
 	
+	@Basic
+	@Column( name = "lastname", length = 30 )
 	private String									lastName;
 	
 	@Formats.DateTime( pattern = "yyyy-MM-dd HH:mm:ss" )
+	@Column( name = "lastlogin", columnDefinition = "datetime null" )
 	private Date										lastLogin;
 	
+	@Basic
 	private boolean									active;
 	
+	@Basic
+	@Column( name = "email_validated" )
 	private boolean									emailValidated;
 	
-	@ManyToMany
+	@ManyToMany( fetch = FetchType.LAZY, cascade = CascadeType.ALL )
+	@JoinTable( name = "users_roles", joinColumns = @JoinColumn( name = "user_id", referencedColumnName = "id", nullable = false ), inverseJoinColumns = @JoinColumn( name = "role_id", referencedColumnName = "id", nullable = false ) )
 	private List< UserRole >				roles;
 	
-	@OneToMany( cascade = CascadeType.ALL )
+	@OneToMany( fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user" )
 	private List< LinkedAccount >		linkedAccounts;
 	
-	@ManyToMany
+	@ManyToMany( fetch = FetchType.LAZY, cascade = CascadeType.ALL )
+	@JoinTable( name = "users_permissions", joinColumns = @JoinColumn( name = "user_id", referencedColumnName = "id", nullable = false ), inverseJoinColumns = @JoinColumn( name = "permission_id", referencedColumnName = "id", nullable = false ) )
 	private List< UserPermission >	permissions;
 	
 	public void changePassword( final UsernamePasswordAuthUser authUser, final boolean create ) {
