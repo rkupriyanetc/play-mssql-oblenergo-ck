@@ -1,5 +1,6 @@
 package mk.obl.ck.energy.csm.mssql.models;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -43,7 +44,9 @@ import play.data.validation.Constraints;
 		@NamedQuery( name = "FindAuthUser", query = "select u from User u left join LinkedAccount a on a.user = u where u.active = true and a.providerKey = :linked_account_provider_key and a.providerUserId = :linked_account_provider_user_id" ),
 		@NamedQuery( name = "FindUsernamePasswordAuthUser", query = "select u from User u left join LinkedAccount a on a.user = u where u.active = true and u.email = :email and a.providerKey = :linked_account_provider_key" ),
 		@NamedQuery( name = "FindByEmail", query = "select u from User u where u.active = true and u.email = :email" ) } )
-public class User extends MSSQLModel implements Subject {
+public class User extends MSSQLModel implements Subject, Serializable {
+	
+	private static final long		serialVersionUID											= 1L;
 	
 	private static final String	FIELD_EMAIL														= "email";
 	
@@ -54,7 +57,7 @@ public class User extends MSSQLModel implements Subject {
 	public static void addLinkedAccount( final AuthUser oldUser, final AuthUser newUser ) {
 		final User u = User.findByAuthUserIdentity( oldUser );
 		u.linkedAccounts.add( LinkedAccount.create( newUser ) );
-		getEntityManager().merge( u ); // Save to Database
+		u.getEntityManager().merge( u ); // Save to Database
 	}
 	
 	public static User create( final AuthUser authUser ) {
@@ -88,7 +91,7 @@ public class User extends MSSQLModel implements Subject {
 			if ( lastName != null )
 				user.lastName = lastName;
 		}
-		getEntityManager().persist( user ); // Save to Database
+		user.getEntityManager().persist( user ); // Save to Database
 		// Ebean.saveManyToManyAssociations(user, "roles");
 		// Ebean.saveManyToManyAssociations(user, "permissions");
 		return user;

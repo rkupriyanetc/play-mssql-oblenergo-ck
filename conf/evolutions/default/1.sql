@@ -55,7 +55,7 @@ create table permissions (
 
 create table roles (
   id                            numeric(19) identity(1,1) not null,
-  role_name                     varchar(5),
+  rolename                      varchar(5),
   constraint pk_roles primary key (id)
 );
 

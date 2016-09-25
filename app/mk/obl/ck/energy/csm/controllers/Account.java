@@ -16,7 +16,7 @@ import play.data.FormFactory;
 import play.data.format.Formats.NonEmpty;
 import play.data.validation.Constraints.MinLength;
 import play.data.validation.Constraints.Required;
-import play.db.ebean.Transactional;
+import play.db.jpa.Transactional;
 import play.i18n.Messages;
 import play.i18n.MessagesApi;
 import play.mvc.Controller;

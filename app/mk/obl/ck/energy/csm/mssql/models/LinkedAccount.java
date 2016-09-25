@@ -1,5 +1,7 @@
 package mk.obl.ck.energy.csm.mssql.models;
 
+import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,7 +21,9 @@ import com.feth.play.module.pa.user.AuthUser;
 @Table( name = "linkeds" )
 @NamedQueries( {
 		@NamedQuery( name = "FindByProviderKey", query = "select l from LinkedAccount l where l.providerKey = :providerKey and l.user = :user_id" ) } )
-public class LinkedAccount extends MSSQLModel {
+public class LinkedAccount extends MSSQLModel implements Serializable {
+	
+	private static final long		serialVersionUID		= 1L;
 	
 	private static final String	FIELD_USER_ID				= "user_id";
 	

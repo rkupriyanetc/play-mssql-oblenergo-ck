@@ -1,5 +1,6 @@
 package mk.obl.ck.energy.csm.mssql.models;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -27,13 +28,15 @@ import play.data.format.Formats;
 @NamedQueries( {
 		@NamedQuery( name = "FindByTokenAndType", query = "select a from TokenAction a where a.token = :token and a.type = :type" ),
 		@NamedQuery( name = "FindByUserAndType", query = "select a from TokenAction a where a.user = :user_id and a.type = :type" ) } )
-public class TokenAction extends MSSQLModel {
+public class TokenAction extends MSSQLModel implements Serializable {
 	
 	public enum Type {
 		@EnumValue( "EV" )
 		EMAIL_VERIFICATION, @EnumValue( "PR" )
 		PASSWORD_RESET
 	}
+	
+	private static final long		serialVersionUID	= 1L;
 	
 	/**
 	 * Verification time frame (until the user clicks on the link in the email)

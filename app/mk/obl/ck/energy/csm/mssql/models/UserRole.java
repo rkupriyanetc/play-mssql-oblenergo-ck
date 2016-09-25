@@ -1,5 +1,7 @@
 package mk.obl.ck.energy.csm.mssql.models;
 
+import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,17 +17,19 @@ import be.objectify.deadbolt.java.models.Role;
 @Entity
 @Table( name = "roles" )
 @NamedQueries( { @NamedQuery( name = "FindByUserRolename", query = "select r from UserRole r where r.roleName = :rolename" ) } )
-public class UserRole extends MSSQLModel implements Role {
+public class UserRole extends MSSQLModel implements Role, Serializable {
 	
-	public static final String	OPER_ROLE_NAME	= "OPER";
+	private static final long		serialVersionUID	= 1L;
 	
-	public static final String	ADMIN_ROLE_NAME	= "ADMIN";
+	public static final String	OPER_ROLE_NAME		= "OPER";
 	
-	public static final Role		OPER						= new UserRole( OPER_ROLE_NAME );
+	public static final String	ADMIN_ROLE_NAME		= "ADMIN";
 	
-	public static final Role		ADMIN						= new UserRole( ADMIN_ROLE_NAME );
+	public static final Role		OPER							= new UserRole( OPER_ROLE_NAME );
 	
-	private static final String	FIELD_ROLENAME	= "rolename";
+	public static final Role		ADMIN							= new UserRole( ADMIN_ROLE_NAME );
+	
+	private static final String	FIELD_ROLENAME		= "rolename";
 	
 	public static UserRole findByRoleName( final String roleName ) {
 		try {
@@ -52,7 +56,7 @@ public class UserRole extends MSSQLModel implements Role {
 	}
 	
 	@Basic
-	@Column( name = "role_name", length = 5 )
+	@Column( name = "rolename", length = 5 )
 	private final String roleName;
 	
 	// public UserRole() {}

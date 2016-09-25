@@ -5,8 +5,16 @@
              version="2.1">
 
     <persistence-unit name="defaultPersistenceUnit" transaction-type="RESOURCE_LOCAL">
-        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <non-jta-data-source>DefaultDS</non-jta-data-source>
+        
+        <class>mk.obl.ck.energy.csm.mssql.models.MSSQLModel</class>
+        <class>mk.obl.ck.energy.csm.mssql.models.User</class>
+        <class>mk.obl.ck.energy.csm.mssql.models.LinkedAccount</class>
+        <class>mk.obl.ck.energy.csm.mssql.models.TokenAction</class>
+        <class>mk.obl.ck.energy.csm.mssql.models.UserPermission</class>
+        <class>mk.obl.ck.energy.csm.mssql.models.UserRole</class>
+        
         <properties>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>

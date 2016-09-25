@@ -1,5 +1,7 @@
 package mk.obl.ck.energy.csm.mssql.models;
 
+import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,9 +18,11 @@ import be.objectify.deadbolt.java.models.Permission;
 @Table( name = "permissions" )
 @NamedQueries( {
 		@NamedQuery( name = "FindByPermissionValue", query = "select p from UserPermission p where p.value = :value" ) } )
-public class UserPermission extends MSSQLModel implements Permission {
+public class UserPermission extends MSSQLModel implements Permission, Serializable {
 	
-	private static final String FIELD_PERMISSION_VALUE = "value";
+	private static final long		serialVersionUID				= 1L;
+	
+	private static final String	FIELD_PERMISSION_VALUE	= "value";
 	
 	public static UserPermission findByValue( final String value ) {
 		try {

@@ -1,5 +1,10 @@
 /* Створення таблиць в БД CSM */
 
+if exists ( select so.name from sysobjects so
+     where so.name = 'linkeds' and so.xtype = 'U' )
+  drop table linkeds
+go;
+
 create table linkeds (
 id                            bigint identity( 1, 1 ) not null,
 user_id                       bigint not null,
@@ -7,6 +12,11 @@ user_provider                 varchar( 30 ),
 provider_key                  varchar( 30 ),
 constraint pk_linkeds primary key ( id )
 ) go;
+
+if exists ( select so.name from sysobjects so
+     where so.name = 'tokens' and so.xtype = 'U' )
+  drop table tokens
+go;
 
 create table tokens (
 id                            bigint identity( 1, 1 ) not null,
@@ -20,6 +30,11 @@ constraint uq_tokens_token unique ( token ),
 constraint pk_tokens primary key ( id )
 ) go;
 
+if exists ( select so.name from sysobjects so
+     where so.name = 'users' and so.xtype = 'U' )
+  drop table users
+go;
+
 create table users (
 id                            bigint identity( 1, 1 ) not null,
 email                         varchar( 70 ),
@@ -32,17 +47,10 @@ email_validated               bit default 0,
 constraint pk_users primary key ( id )
 ) go;
 
-create table users_roles (
-user_id                       bigint not null,
-role_id                       bigint not null,
-constraint pk_users_roles primary key ( user_id, role_id )
-) go;
-
-create table users_permissions (
-user_id                       bigint not null,
-permission_id                 bigint not null,
-constraint pk_users_permissions primary key ( user_id, permission_id )
-) go;
+if exists ( select so.name from sysobjects so
+     where so.name = 'permissions' and so.xtype = 'U' )
+  drop table permissions
+go;
 
 create table permissions (
 id                            bigint identity( 1, 1 ) not null,
@@ -50,10 +58,37 @@ value                         varchar( 50 ),
 constraint pk_permissions primary key ( id )
 ) go;
 
+if exists ( select so.name from sysobjects so
+     where so.name = 'roles' and so.xtype = 'U' )
+  drop table roles
+go;
+
 create table roles (
 id                            bigint identity( 1, 1 ) not null,
-role_name                     varchar( 5 ),
+rolename                      varchar( 5 ),
 constraint pk_roles primary key ( id )
+) go;
+
+if exists ( select so.name from sysobjects so
+     where so.name = 'users_roles' and so.xtype = 'U' )
+  drop table users_roles
+go;
+
+create table users_roles (
+user_id                       bigint not null,
+role_id                       bigint not null,
+constraint pk_users_roles primary key ( user_id, role_id )
+) go;
+
+if exists ( select so.name from sysobjects so
+     where so.name = 'users_permissions' and so.xtype = 'U' )
+  drop table users_permissions
+go;
+
+create table users_permissions (
+user_id                       bigint not null,
+permission_id                 bigint not null,
+constraint pk_users_permissions primary key ( user_id, permission_id )
 ) go;
 
 alter table linkeds add constraint fk_linkeds_user_id foreign key ( user_id ) references users ( id ) go;
