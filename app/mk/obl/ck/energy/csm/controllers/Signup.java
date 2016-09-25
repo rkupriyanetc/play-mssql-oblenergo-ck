@@ -15,6 +15,7 @@ import mk.obl.ck.energy.csm.providers.MyUsernamePasswordAuthUser;
 import mk.obl.ck.energy.csm.service.UserProvider;
 import play.data.Form;
 import play.data.FormFactory;
+import play.db.jpa.Transactional;
 import play.i18n.MessagesApi;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -114,6 +115,7 @@ public class Signup extends Controller {
 		}
 	}
 	
+	@Transactional
 	public Result doResetPassword() {
 		AuthenticateBase.noCache( response() );
 		final Form< PasswordReset > filledForm = PASSWORD_RESET_FORM.bindFromRequest();
