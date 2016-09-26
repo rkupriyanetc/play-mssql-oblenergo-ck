@@ -5,7 +5,7 @@
              version="2.1">
 
     <persistence-unit name="defaultPersistenceUnit" transaction-type="RESOURCE_LOCAL">
-        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <non-jta-data-source>DefaultDS</non-jta-data-source>
         
         <class>mk.obl.ck.energy.csm.mssql.models.MSSQLModel</class>

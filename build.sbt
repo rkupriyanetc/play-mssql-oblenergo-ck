@@ -10,12 +10,11 @@ herokuAppName in Compile := "play-authenticate"
 
 val appDependencies = Seq(
   "be.objectify"                   %% "deadbolt-java"           % "2.5.0",
-  "com.feth"                       %% "play-authenticate"       % "0.8.1-SNAPSHOT",
-  javaJpa,
-  ("org.hibernate"                  % "hibernate-entitymanager" % "5.2.2.Final").intransitive(),
-  //.exclude("org.apache.httpcomponents", "httpclient")
+  ("com.feth"                       %% "play-authenticate"       % "0.8.1-SNAPSHOT").exclude("javax.persistence","persistence-api"),
+  javaJpa.exclude("javax.persistence","persistence-api"),
+  //.exclude("org.hibernate.javax.persistence","hibernate-jpa-2.1-api"),
+  "org.hibernate"                   % "hibernate-entitymanager" % "5.2.2.Final",
   "org.dom4j"                       % "dom4j"                   % "2.0.0",
-  "org.hibernate"                   % "ejb3-persistence"        % "1.0.2.GA",
   cache,
   javaWs,
   "org.webjars"                     % "bootstrap"               % "3.2.0",
