@@ -6,8 +6,6 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 import javax.persistence.Table;
@@ -16,24 +14,29 @@ import be.objectify.deadbolt.java.models.Role;
 
 @Entity
 @Table( name = "roles" )
-@NamedQueries( { @NamedQuery( name = "FindByUserRolename", query = "select r from UserRole r where r.roleName = :rolename" ) } )
+/*
+ * @NamedQueries( { @NamedQuery( name = "FindByUserRolename", query =
+ * "select r from UserRole r where r.roleName = :rolename" ) } )
+ */
 public class UserRole extends MSSQLModel implements Role, Serializable {
 	
-	private static final long		serialVersionUID	= 1L;
+	private static final String	FIND_ROLE_BY_ROLENAME	= "select * from roles where rolename = :rolename";
 	
-	public static final String	OPER_ROLE_NAME		= "OPER";
+	private static final long		serialVersionUID			= 1L;
 	
-	public static final String	ADMIN_ROLE_NAME		= "ADMIN";
+	public static final String	OPER_ROLE_NAME				= "OPER";
 	
-	public static final Role		OPER							= new UserRole( OPER_ROLE_NAME );
+	public static final String	ADMIN_ROLE_NAME				= "ADMIN";
 	
-	public static final Role		ADMIN							= new UserRole( ADMIN_ROLE_NAME );
+	public static final Role		OPER									= new UserRole( OPER_ROLE_NAME );
 	
-	private static final String	FIELD_ROLENAME		= "rolename";
+	public static final Role		ADMIN									= new UserRole( ADMIN_ROLE_NAME );
+	
+	private static final String	FIELD_ROLENAME				= "rolename";
 	
 	public static UserRole findByRoleName( final String roleName ) {
 		try {
-			final Query query = getEntityManager().createNamedQuery( "FindByUserRolename" );
+			final Query query = getEntityManager().createNativeQuery( FIND_ROLE_BY_ROLENAME );
 			query.setParameter( FIELD_ROLENAME, roleName );
 			return ( UserRole )query.getSingleResult();
 		}

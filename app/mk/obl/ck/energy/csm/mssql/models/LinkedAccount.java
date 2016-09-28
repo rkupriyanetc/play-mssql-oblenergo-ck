@@ -9,8 +9,6 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 import javax.persistence.Table;
@@ -19,17 +17,23 @@ import com.feth.play.module.pa.user.AuthUser;
 
 @Entity
 @Table( name = "linkeds" )
-@NamedQueries( {
-		@NamedQuery( name = "FindByProviderKey", query = "select l from LinkedAccount l where l.providerKey = :providerKey and l.user = :user_id" ) } )
+/*
+ * @NamedQueries( {
+ * @NamedQuery( name = "FindByProviderKey", query =
+ * "select l from LinkedAccount l where l.providerKey = :providerKey and l.user_id = :user_id"
+ * ) } )
+ */
 public class LinkedAccount extends MSSQLModel implements Serializable {
 	
-	private static final long		serialVersionUID		= 1L;
+	private static final String	FIND_LINKEDS_BY_PROVIDER_KEY	= "select * from linkeds where provider_key = :provider_key and user_id = :user_id";
 	
-	private static final String	FIELD_USER_ID				= "user_id";
+	private static final long		serialVersionUID							= 1L;
 	
-	private static final String	FIELD_USER_PROVIDER	= "user_provider";
+	private static final String	FIELD_USER_ID									= "user_id";
 	
-	private static final String	FIELD_PROVIDER_KEY	= "provider_key";
+	private static final String	FIELD_USER_PROVIDER						= "user_provider";
+	
+	private static final String	FIELD_PROVIDER_KEY						= "provider_key";
 	
 	public static LinkedAccount create( final AuthUser authUser ) {
 		final LinkedAccount ret = new LinkedAccount();
@@ -48,7 +52,7 @@ public class LinkedAccount extends MSSQLModel implements Serializable {
 		// return find.where().eq( "user", user ).eq( "providerKey", key
 		// ).findUnique();
 		try {
-			final Query query = getEntityManager().createNamedQuery( "FindByProviderKey" );
+			final Query query = getEntityManager().createNativeQuery( FIND_LINKEDS_BY_PROVIDER_KEY );
 			query.setParameter( FIELD_USER_ID, user.getId() );
 			query.setParameter( FIELD_PROVIDER_KEY, key );
 			return ( LinkedAccount )query.getSingleResult();

@@ -17,8 +17,6 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
@@ -40,24 +38,37 @@ import play.data.validation.Constraints;
 
 @Entity
 @Table( name = "users" )
-@NamedQueries( {
-		@NamedQuery( name = "FindAuthUser", query = "select u from User u left join LinkedAccount a on a.user = u where u.active = true and a.providerKey = :linked_account_provider_key and a.providerUserId = :linked_account_provider_user_id" ),
-		@NamedQuery( name = "FindUsernamePasswordAuthUser", query = "select u from User u left join LinkedAccount a on a.user = u where u.active = true and u.email = :email and a.providerKey = :linked_account_provider_key" ),
-		@NamedQuery( name = "FindByEmail", query = "select u from User u where u.active = true and u.email = :email" ) } )
+/*
+ * @NamedQueries( {
+ * @NamedQuery( name = "FindAuthUser", query =
+ * "select u from User u left join LinkedAccount a on a.user_id = u.id where u.active = true and a.providerKey = :linked_account_provider_key and a.providerUserId = :linked_account_provider_user_id"
+ * ),
+ * @NamedQuery( name = "FindUsernamePasswordAuthUser", query =
+ * "select u from User u left join LinkedAccount a on a.user_id = u.id where u.active = true and u.email = :email and a.providerKey = :linked_account_provider_key"
+ * ),
+ * @NamedQuery( name = "FindByEmail", query =
+ * "select u from User u where u.active = true and u.email = :email" ) } )
+ */
 public class User extends MSSQLModel implements Subject, Serializable {
 	
-	private static final long		serialVersionUID											= 1L;
+	private static final String	FIND_USER_BY_AUTHUSER										= "select u.* from users u left join linkeds a on a.user_id = u.id where u.active = 1 and a.provider_key = :linked_account_provider_key and a.user_provider = :linked_account_provider_user_id";
 	
-	private static final String	FIELD_EMAIL														= "email";
+	private static final String	FIND_USER_BY_USERNANE_PASSWORD_AUTHUSER	= "select u.* from users u left join linkeds a on a.user_id = u.id where u.active = 1 and u.email = :email and a.provider_key = :linked_account_provider_key";
 	
-	private static final String	FIELD_LINKED_ACCOUNT_PROVIDER_KEY			= "linked_account_provider_key";
+	private static final String	FIND_USER_BY_EMAIL											= "select * from users where active = 1 and email = :email";
 	
-	private static final String	FIELD_LINKED_ACCOUNT_PROVIDER_USER_ID	= "linked_account_provider_user_id";
+	private static final long		serialVersionUID												= 1L;
+	
+	private static final String	FIELD_EMAIL															= "email";
+	
+	private static final String	FIELD_LINKED_ACCOUNT_PROVIDER_KEY				= "linked_account_provider_key";
+	
+	private static final String	FIELD_LINKED_ACCOUNT_PROVIDER_USER_ID		= "linked_account_provider_user_id";
 	
 	public static void addLinkedAccount( final AuthUser oldUser, final AuthUser newUser ) {
 		final User u = User.findByAuthUserIdentity( oldUser );
 		u.linkedAccounts.add( LinkedAccount.create( newUser ) );
-		u.getEntityManager().merge( u ); // Save to Database
+		MSSQLModel.getEntityManager().merge( u ); // Save to Database
 	}
 	
 	public static User create( final AuthUser authUser ) {
@@ -91,7 +102,7 @@ public class User extends MSSQLModel implements Subject, Serializable {
 			if ( lastName != null )
 				user.lastName = lastName;
 		}
-		user.getEntityManager().persist( user ); // Save to Database
+		MSSQLModel.getEntityManager().persist( user ); // Save to Database
 		// Ebean.saveManyToManyAssociations(user, "roles");
 		// Ebean.saveManyToManyAssociations(user, "permissions");
 		return user;
@@ -128,9 +139,9 @@ public class User extends MSSQLModel implements Subject, Serializable {
 		// "linkedAccounts.providerUserId", identity.getId() ).eq(
 		// "linkedAccounts.providerKey", identity.getProvider() );
 		try {
-			final Query query = getEntityManager().createNamedQuery( "FindAuthUser" );
-			query.setParameter( FIELD_LINKED_ACCOUNT_PROVIDER_USER_ID, identity.getId() );
+			final Query query = getEntityManager().createNativeQuery( FIND_USER_BY_AUTHUSER );
 			query.setParameter( FIELD_LINKED_ACCOUNT_PROVIDER_KEY, identity.getProvider() );
+			query.setParameter( FIELD_LINKED_ACCOUNT_PROVIDER_USER_ID, identity.getId() );
 			return query.getResultList();
 		}
 		catch ( final IllegalStateException ise ) {
@@ -154,7 +165,7 @@ public class User extends MSSQLModel implements Subject, Serializable {
 	private static List< User > getEmailUserFind( final String email ) {
 		// return find.where().eq( "active", true ).eq( "email", email );
 		try {
-			final Query query = getEntityManager().createNamedQuery( "FindByEmail" );
+			final Query query = getEntityManager().createNativeQuery( FIND_USER_BY_EMAIL );
 			query.setParameter( FIELD_EMAIL, email );
 			return query.getResultList();
 		}
@@ -180,7 +191,7 @@ public class User extends MSSQLModel implements Subject, Serializable {
 		// return getEmailUserFind( identity.getEmail() ).eq(
 		// "linkedAccounts.providerKey", identity.getProvider() );
 		try {
-			final Query query = getEntityManager().createNamedQuery( "FindUsernamePasswordAuthUser" );
+			final Query query = getEntityManager().createNativeQuery( FIND_USER_BY_USERNANE_PASSWORD_AUTHUSER );
 			query.setParameter( FIELD_EMAIL, identity.getEmail() );
 			query.setParameter( FIELD_LINKED_ACCOUNT_PROVIDER_KEY, identity.getProvider() );
 			return query.getResultList();

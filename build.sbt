@@ -10,10 +10,9 @@ herokuAppName in Compile := "play-authenticate"
 
 val appDependencies = Seq(
   "be.objectify"                   %% "deadbolt-java"           % "2.5.0",
-  ("com.feth"                       %% "play-authenticate"       % "0.8.1-SNAPSHOT").exclude("javax.persistence","persistence-api"),
-  javaJpa.exclude("javax.persistence","persistence-api"),
-  //.exclude("org.hibernate.javax.persistence","hibernate-jpa-2.1-api"),
+  "org.hibernate.javax.persistence" % "hibernate-jpa-2.1-api"   % "1.0.0.Final",
   "org.hibernate"                   % "hibernate-entitymanager" % "5.2.2.Final",
+  "com.feth"                       %% "play-authenticate"       % "0.8.1-SNAPSHOT",
   "org.dom4j"                       % "dom4j"                   % "2.0.0",
   cache,
   javaWs,
@@ -21,6 +20,8 @@ val appDependencies = Seq(
   "org.easytesting"                 % "fest-assert"             % "1.4"              % "test",
   "org.seleniumhq.selenium"         % "selenium-java"           % "2.52.0"           % "test"
 )
+
+excludeDependencies += "javax.persistence" % "persistence-api"
 
 // add resolver for deadbolt and easymail snapshots
 resolvers += Resolver.sonatypeRepo("snapshots")

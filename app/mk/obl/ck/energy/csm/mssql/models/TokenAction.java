@@ -13,8 +13,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 import javax.persistence.Table;
@@ -25,9 +23,14 @@ import play.data.format.Formats;
 
 @Entity
 @Table( name = "tokens" )
-@NamedQueries( {
-		@NamedQuery( name = "FindByTokenAndType", query = "select a from TokenAction a where a.token = :token and a.type = :type" ),
-		@NamedQuery( name = "FindByUserAndType", query = "select a from TokenAction a where a.user = :user_id and a.type = :type" ) } )
+/*
+ * @NamedQueries( {
+ * @NamedQuery( name = "FindByTokenAndType", query =
+ * "select a from TokenAction a where a.token = :token and a.type = :type" ),
+ * @NamedQuery( name = "FindByUserAndType", query =
+ * "select a from TokenAction a where a.user_id = :user_id and a.type = :type" )
+ * } )
+ */
 public class TokenAction extends MSSQLModel implements Serializable {
 	
 	public enum Type {
@@ -36,20 +39,24 @@ public class TokenAction extends MSSQLModel implements Serializable {
 		PASSWORD_RESET
 	}
 	
-	private static final long		serialVersionUID	= 1L;
+	private static final String	FIND_TOKENS_BY_TOKEN_AND_TYPE	= "select * from tokens where token = :token and type = :type";
+	
+	private static final String	FIND_TOKENS_BY_USER_AND_TYPE	= "select * from tokens where user_id = :user_id and type = :type";
+	
+	private static final long		serialVersionUID							= 1L;
 	
 	/**
 	 * Verification time frame (until the user clicks on the link in the email)
 	 * in seconds
 	 * Defaults to one week
 	 */
-	private final static long		VERIFICATION_TIME	= 7 * 24 * 3600;
+	private final static long		VERIFICATION_TIME							= 7 * 24 * 3600;
 	
-	private static final String	FIELD_USER_ID			= "user_id";
+	private static final String	FIELD_USER_ID									= "user_id";
 	
-	private static final String	FIELD_TOKEN				= "token";
+	private static final String	FIELD_TOKEN										= "token";
 	
-	private static final String	FIELD_TYPE				= "type";
+	private static final String	FIELD_TYPE										= "type";
 	
 	public static TokenAction create( final Type type, final String token, final User targetUser ) {
 		final TokenAction ua = new TokenAction();
@@ -64,7 +71,7 @@ public class TokenAction extends MSSQLModel implements Serializable {
 	}
 	
 	public static void deleteByUser( final User u, final Type type ) {
-		final Query query = getEntityManager().createNamedQuery( "FindByUserAndType" );
+		final Query query = getEntityManager().createNativeQuery( FIND_TOKENS_BY_USER_AND_TYPE );
 		query.setParameter( FIELD_USER_ID, u.getId() );
 		query.setParameter( FIELD_TYPE, type.name() );
 		final List< TokenAction > iterator = query.getResultList();
@@ -76,7 +83,7 @@ public class TokenAction extends MSSQLModel implements Serializable {
 	
 	public static TokenAction findByToken( final String token, final Type type ) {
 		try {
-			final Query query = getEntityManager().createNamedQuery( "FindByTokenAndType" );
+			final Query query = getEntityManager().createNativeQuery( FIND_TOKENS_BY_TOKEN_AND_TYPE );
 			query.setParameter( FIELD_TOKEN, token );
 			query.setParameter( FIELD_TYPE, type.name() );
 			return ( TokenAction )query.getSingleResult();
