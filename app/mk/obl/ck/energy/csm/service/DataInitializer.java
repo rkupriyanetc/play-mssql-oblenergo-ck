@@ -25,7 +25,8 @@ public class DataInitializer {
 		 * role.roleName = roleName;
 		 * role.save();
 		 * }
-		 */final EntityManager em = MSSQLModel.getEntityManager();
+		 */
+		final EntityManager em = MSSQLModel.getEntityManager();
 		if ( UserRole.findByRoleName( UserRole.ADMIN_ROLE_NAME ) == null ) {
 			em.persist( UserRole.ADMIN );
 			LOGGER.warn( "UserRole ADMIN is {}", UserRole.ADMIN );

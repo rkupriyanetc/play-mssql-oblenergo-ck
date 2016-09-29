@@ -122,16 +122,20 @@ public class User extends MSSQLModel implements Subject, Serializable {
 			return null;
 		if ( identity instanceof UsernamePasswordAuthUser )
 			return findByUsernamePasswordIdentity( ( UsernamePasswordAuthUser )identity );
-		else
-			return getAuthUserFind( identity ).get( 0 );
+		else {
+			final List< User > users = getAuthUserFind( identity );
+			return users == null || users.isEmpty() ? null : users.get( 0 );
+		}
 	}
 	
 	public static User findByEmail( final String email ) {
-		return getEmailUserFind( email ).get( 0 );
+		final List< User > users = getEmailUserFind( email );
+		return users == null || users.isEmpty() ? null : users.get( 0 );
 	}
 	
 	public static User findByUsernamePasswordIdentity( final UsernamePasswordAuthUser identity ) {
-		return getUsernamePasswordAuthUserFind( identity ).get( 0 );
+		final List< User > users = getUsernamePasswordAuthUserFind( identity );
+		return users == null || users.isEmpty() ? null : users.get( 0 );
 	}
 	
 	private static List< User > getAuthUserFind( final AuthUserIdentity identity ) {

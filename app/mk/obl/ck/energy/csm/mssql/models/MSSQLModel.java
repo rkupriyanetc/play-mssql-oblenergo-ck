@@ -41,8 +41,6 @@ public abstract class MSSQLModel implements MSSQLIdentifier, Serializable {
 			final EntityManagerFactory emf = Persistence.createEntityManagerFactory( DEFAULT_PERSISTENCE_UNIT );
 			em = emf.createEntityManager();
 		}
-		LOGGER.warn( "EntityManager is {}", em );
-		LOGGER.info( "EntityManager is {}", em );
 		return em;
 	}
 	

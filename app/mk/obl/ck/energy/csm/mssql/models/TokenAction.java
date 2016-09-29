@@ -74,6 +74,7 @@ public class TokenAction extends MSSQLModel implements Serializable {
 		final Query query = getEntityManager().createNativeQuery( FIND_TOKENS_BY_USER_AND_TYPE );
 		query.setParameter( FIELD_USER_ID, u.getId() );
 		query.setParameter( FIELD_TYPE, type.name() );
+		@SuppressWarnings( "unchecked" )
 		final List< TokenAction > iterator = query.getResultList();
 		// find.where().eq( "targetUser.id", u.id ).eq( "type", type
 		// ).findIterate();

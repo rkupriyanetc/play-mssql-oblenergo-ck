@@ -14,10 +14,6 @@ import be.objectify.deadbolt.java.models.Role;
 
 @Entity
 @Table( name = "roles" )
-/*
- * @NamedQueries( { @NamedQuery( name = "FindByUserRolename", query =
- * "select r from UserRole r where r.roleName = :rolename" ) } )
- */
 public class UserRole extends MSSQLModel implements Role, Serializable {
 	
 	private static final String	FIND_ROLE_BY_ROLENAME	= "select * from roles where rolename = :rolename";
@@ -36,7 +32,7 @@ public class UserRole extends MSSQLModel implements Role, Serializable {
 	
 	public static UserRole findByRoleName( final String roleName ) {
 		try {
-			final Query query = getEntityManager().createNativeQuery( FIND_ROLE_BY_ROLENAME );
+			final Query query = getEntityManager().createNativeQuery( FIND_ROLE_BY_ROLENAME, UserRole.class );
 			query.setParameter( FIELD_ROLENAME, roleName );
 			return ( UserRole )query.getSingleResult();
 		}
