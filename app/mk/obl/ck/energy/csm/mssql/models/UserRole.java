@@ -23,11 +23,9 @@ public class UserRole extends MSSQLModel implements Role, Serializable {
 	public static final String	OPER_ROLE_NAME				= "OPER";
 	
 	public static final String	ADMIN_ROLE_NAME				= "ADMIN";
+	// public static final Role OPER = new UserRole( OPER_ROLE_NAME );
 	
-	public static final Role		OPER									= new UserRole( OPER_ROLE_NAME );
-	
-	public static final Role		ADMIN									= new UserRole( ADMIN_ROLE_NAME );
-	
+	// public static final Role ADMIN = new UserRole( ADMIN_ROLE_NAME );
 	private static final String	FIELD_ROLENAME				= "rolename";
 	
 	public static UserRole findByRoleName( final String roleName ) {
